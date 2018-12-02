@@ -1,8 +1,12 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class EvaluationService {
 
@@ -30,8 +34,15 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		phrase = phrase.toUpperCase();
+		String[] splitPhrase = phrase.split("-|\\s");
+		String acronym = "";
+		
+		for (int i = 0; i < splitPhrase.length; i++) {
+			acronym = acronym + splitPhrase[i].charAt(0); //index 0 of the array
+		}
+		
+		return acronym;
 	}
 
 	/**
@@ -84,21 +95,30 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
-		}
+            if ((sideOne == sideTwo) && (sideTwo == sideThree)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
-			return false;
-		}
+        public boolean isIsosceles() {
+            if ((sideOne == sideTwo) && (sideOne != sideThree) || (sideOne == sideThree) && (sideOne != sideTwo)
+            		|| (sideTwo == sideThree) && (sideTwo != sideOne)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
-		}
-
-	}
+        public boolean isScalene() {
+            if (sideOne != sideTwo && sideTwo != sideThree && sideOne != sideThree) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 
 	/**
 	 * 4. Given a word, compute the scrabble score for that word.
@@ -116,8 +136,66 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		String WORD = string.toUpperCase();
+		int point = 0;
+		
+	      //Convert String to charArray
+	      char[] wordArray = WORD.toCharArray();
+
+	      //For each element of array, calculate the point and add to total point
+	      for ( int j = 0; j < wordArray.length; j++ ) 
+	         {
+	     		switch( wordArray[ j ])
+	     		{
+	     			case 'A':
+	     			case 'E':
+	     			case 'I':
+	     			case 'O':
+	     			case 'U':
+	     			case 'L':
+	     			case 'N':
+	     			case 'R':
+	     			case 'S':
+	     			case 'T':
+						point += 1;
+						break;
+						
+	     			case 'D':
+	     			case 'G':
+						point += 2;
+						break;
+
+	     			case 'B':
+	     			case 'C':
+	     			case 'M':
+	     			case 'P':
+						point += 3;
+						break;
+
+	     			case 'F':
+	     			case 'H':
+	     			case 'V':
+	     			case 'W':
+	     			case 'Y':
+						point += 4;
+						break;
+						
+	     			case 'K':
+						point += 5;
+						break;
+
+	     			case 'J':
+	     			case 'X':
+						point += 8;
+						break;
+						
+	     			case 'Q':
+	     			case 'Z':
+	     				point += 10;
+						
+	     		}
+	       	 }
+		return point;
 	}
 
 	/**
@@ -151,9 +229,15 @@ public class EvaluationService {
 	 * Note: As this exercise only deals with telephone numbers used in
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
-	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public String cleanPhoneNumber(String string) throws IllegalArgumentException {
+		
+		String phoneNum = string.replaceAll("[^0-9]" , "");
+		if (phoneNum.length() < 10) {
+            throw new IllegalArgumentException("Need more digits, please.");
+        } else if (phoneNum.length() >= 11) {
+        	throw new IllegalArgumentException("Remove some digits, please.");
+    }
+		return phoneNum;
 	}
 
 	/**
@@ -165,9 +249,20 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	//FAILS
+	public Map<String, Integer> phraseCount(String count) {
+		HashMap<String, Integer> wordCount = new HashMap<String, Integer>();
+		String[] wordArray = count.split("\\s|,");
+		for (String c : wordArray) {
+			if (wordCount.containsKey(c)) {
+				wordCount.put(c, wordCount.get(c) + 1);
+				} else {
+					wordCount.put(c, 1);
+				}
+			}
+		wordCount.remove("");
+		
+		return wordCount;
 	}
 
 	/**
@@ -205,12 +300,13 @@ public class EvaluationService {
 	 * binary search is a dichotomic divide and conquer search algorithm.
 	 * 
 	 */
-	static class BinarySearch<T> {
+	static class BinarySearch<T extends Comparable<T>> {
 		private List<T> sortedList;
 
 		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
-			return 0;
+			int search = Collections.binarySearch(sortedList, t);
+			
+			return search;
 		}
 
 		public BinarySearch(List<T> sortedList) {
@@ -244,10 +340,30 @@ public class EvaluationService {
 	 * 
 	 * @param string
 	 * @return
-	 */
+	 */	
+//works for only one test
 	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
+		char[] vowels = {'a','e','i','o','u'};
+		int start = 0;
+		int vowel = 0;
+		if (string.charAt(0) == vowels[0] || string.charAt(0) == vowels[1] || string.charAt(0) == vowels[2] || string.charAt(0) == vowels[3] || string.charAt(0) == vowels[4]) {
+			string = string + "ay";
+				return string;
+		}
+		for (int i =1; i < string.length(); i++) {
+			for (int v = 0; v <= vowels.length - 1; i++) {
+				if (string.charAt(i) == vowels[v]) {
+					vowel = i;
+				}
+			}
+		}
 		return null;
+	}
+
+//?????????
+	public void binarySearch(T t) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
@@ -320,10 +436,20 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			StringBuilder strBuilder = new StringBuilder();
+			char c;
+			for (int i = 0; i < string.length(); i++) {
+				c = string.charAt(i);
+				
+				if (Character.isLetter(c)) {
+					c = (char) (string.charAt(i) + key);
+					if ((Character.isLowerCase(string.charAt(i)) && c > 'z') || (Character.isUpperCase(string.charAt(i)) && c > 'Z'))
+						c = (char) (string.charAt(i) - (26 - key));
+				}
+				strBuilder.append(c);
+			}
+			return strBuilder.toString();
 		}
-
 	}
 
 	/**
@@ -338,9 +464,31 @@ public class EvaluationService {
 	 * @param i
 	 * @return
 	 */
-	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+	public int calculateNthPrime(int i) throws IllegalArgumentException {
+		int count = 1;
+		int result = 2;
+		
+		if (i <= 0) {
+			throw new IllegalArgumentException("please enter a positive number");
+		} else if (i == 1) {
+			return result;
+		}
+		for (int j = 3; j <= Integer.MAX_VALUE-1; j++) {
+			if (count == i) {
+				break;
+			}
+			for (int k = 2; k <= j; k++) {
+				if (j%k == 0 && j != k) {
+					break;
+				}
+				if (j == k) {
+					count++;
+					result = j;
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
